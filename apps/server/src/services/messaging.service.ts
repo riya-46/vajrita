@@ -3,7 +3,7 @@ import Twilio from "twilio";
 import type { AlertChannel } from "@vajrita/shared";
 import { env } from "../config/env.js";
 
-type MessageResult = {
+export type MessageResult = {
   status: "sent" | "failed";
   providerMessageId?: string | null;
   errorCode?: string | null;
@@ -44,7 +44,12 @@ export const messagingService = {
     }
   },
 
-  async sendAlert(channel: Exclude<AlertChannel, "call">, phone: string, message: string, name: string) {
+  async sendAlert(
+    channel: Exclude<AlertChannel, "call">,
+    phone: string,
+    message: string,
+    name: string,
+  ): Promise<MessageResult> {
     if (channel === "sms") {
       if (env.PROVIDER_MODE === "fallback" || !twilioClient || !env.TWILIO_FROM_NUMBER) {
         return fallbackLog("sos-sms", phone, { message });

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { trackingService } from "../services/tracking.service.js";
+import { getSingleParam } from "../utils/request.js";
 
 export const trackingController = {
   async active(req: Request, res: Response) {
@@ -13,17 +14,17 @@ export const trackingController = {
   },
 
   async ping(req: Request, res: Response) {
-    const data = await trackingService.ping(req.auth!.userId, req.params.id, req.body.location);
+    const data = await trackingService.ping(req.auth!.userId, getSingleParam(req.params.id), req.body.location);
     res.json({ success: true, data });
   },
 
   async stop(req: Request, res: Response) {
-    const data = await trackingService.stop(req.auth!.userId, req.params.id);
+    const data = await trackingService.stop(req.auth!.userId, getSingleParam(req.params.id));
     res.json({ success: true, data });
   },
 
   async get(req: Request, res: Response) {
-    const data = await trackingService.getOwned(req.auth!.userId, req.params.id);
+    const data = await trackingService.getOwned(req.auth!.userId, getSingleParam(req.params.id));
     res.json({ success: true, data });
   },
 };

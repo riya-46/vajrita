@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { contactsService } from "../services/contacts.service.js";
 import { trackingService } from "../services/tracking.service.js";
+import { getSingleParam } from "../utils/request.js";
 
 function renderVerificationHtml(status: "success" | "error", message: string) {
   return `<!doctype html>
@@ -96,7 +97,8 @@ function renderTrackingHtml(shareToken: string, payload: unknown) {
 export const publicController = {
   async verifyContact(req: Request, res: Response) {
     try {
-      const contact = await contactsService.verifyByToken(req.params.token);
+      const rawToken = getSingleParam(req.params.token);
+      const contact = await contactsService.verifyByToken(rawToken);
       res.status(200).send(
         renderVerificationHtml("success", `${contact.name} is now a verified trusted contact.`),
       );
@@ -107,7 +109,8 @@ export const publicController = {
   },
 
   async publicTrack(req: Request, res: Response) {
-    const data = await trackingService.getPublic(req.params.shareToken);
-    res.status(200).send(renderTrackingHtml(req.params.shareToken, data));
+    const shareToken = getSingleParam(req.params.shareToken);
+    const data = await trackingService.getPublic(shareToken);
+    res.status(200).send(renderTrackingHtml(shareToken, data));
   },
 };

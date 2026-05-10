@@ -8,7 +8,7 @@ let io: Server | null = null;
 export function initializeSockets(server: HttpServer) {
   io = new Server(server, {
     cors: {
-      origin: [env.CLIENT_URL, env.MOBILE_APP_URL],
+      origin: env.CORS_ORIGINS,
       credentials: true,
     },
   });

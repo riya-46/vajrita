@@ -14,6 +14,10 @@ Last updated: May 10, 2026
 - A development Android build succeeded and produced an installable APK
 - The later preview build failure was traced to JavaScript bundling issues, and those fixes are now present locally
 - Local standalone bundling now succeeds, so the project is ready for a fresh preview rebuild and real-device validation
+- Mobile, server, and root TypeScript validation are passing locally
+- Fallback provider mode is usable without Twilio or WhatsApp setup
+- Render free deployment config is included for public backend deployment
+- Railway deployment config is also included if you prefer that platform
 
 Development build artifact:
 
@@ -92,23 +96,105 @@ npx expo export:embed --eager --platform android --dev false
 
 ## Current State
 
-The project has moved from "blocked in Android build setup" to "buildable and ready for validation." The native Gradle issue is no longer the main risk. The remaining work is now focused on generating a clean standalone preview build and validating the app on a real Android device.
+The project has moved from "blocked in Android build setup" to "buildable, deployment-ready, and ready for validation." The native Gradle issue is no longer the main risk. The remaining work is now centered on public backend deployment, switching the mobile app to that deployed API URL, and validating the flows on a real Android device.
 
 ## Remaining Work
 
+- Deploy the backend to a public host such as Railway
+- Point the mobile app to the deployed backend URL and rebuild the Android app
 - Rerun the Android preview build with the latest local fixes
 - Test the app end-to-end on a real Android device
 - Verify Firebase OTP login, backend token exchange, and session persistence
 - Verify SOS, live tracking, fake call flow, permissions, and background behavior
-- Verify Twilio and WhatsApp delivery if live provider mode is required
-- Replace the local backend URL with a deployed backend URL for off-network testing
+- Verify Twilio and WhatsApp delivery only if live provider mode is required
 
 ## Known Operational Constraints
 
-- The mobile app currently points to a local backend URL: `http://192.168.1.2:4000`
-- Device-to-backend connectivity will fail unless the phone and backend are on the same network, or the backend is deployed publicly
+- The mobile app must use a public backend URL for any-network testing
+- If `EXPO_PUBLIC_API_URL` still points to a local IP, the app will only work when the phone and backend are on the same network
+- MongoDB Atlas is only used by the backend. The mobile app should never connect to MongoDB directly
 - There is no automated end-to-end test suite yet
 - Final confidence still depends on real-device testing
+
+## Public Deployment and Any-Network Setup
+
+Use this architecture for reliable access from any network:
+
+```text
+Android app -> public backend URL -> MongoDB Atlas
+```
+
+Do not try to connect the mobile app directly to MongoDB Atlas.
+
+### 1. Deploy the backend
+
+Free hosted option:
+
+- Create a Render account
+- Create a new Web Service from this GitHub repository
+- Render can read the included `render.yaml`, or you can set the commands manually
+- Instance type: `Free`
+- Add all server environment variables from `apps/server/.env`
+- Change `APP_URL` and `CONTACT_VERIFICATION_BASE_URL` to the Render public URL
+- Keep `PROVIDER_MODE=fallback` unless live SMS/WhatsApp delivery is being enabled
+- Set `CLIENT_URL` and `MOBILE_APP_URL` to the same public URL unless you have a separate browser client
+- Set `ALLOWED_ORIGINS` to any browser origins that should be allowed, for example `http://localhost:8081,https://your-app.onrender.com`
+
+Optional paid alternative:
+
+- Railway is also supported through the included `railway.json`
+
+### 2. Allow MongoDB Atlas access
+
+- Keep using MongoDB Atlas as the database
+- In Atlas, create or confirm a database user with read/write access to the project database
+- In Atlas Network Access, allow the backend host to connect
+- The simplest deploy-time option is `0.0.0.0/0`, which allows any IP; if you do this, keep the database password strong and private
+- Paste the Atlas connection string into `MONGODB_URI` on Railway
+
+### 3. Point the mobile app to the deployed backend
+
+- Set `EXPO_PUBLIC_API_URL=https://your-app.onrender.com` in `apps/mobile/.env`
+- Rebuild the Android app after changing that value
+- For local Wi-Fi testing only, replace it with `http://<your-local-ip>:4000`
+
+### 4. Validate on a real device
+
+- If you are testing real Firebase OTP instead of the configured test phone, remove or disable the dev-only Firebase test values from `apps/mobile/.env`
+- Add the Android SHA-1 and SHA-256 fingerprints for the active signing key to the Firebase Android app settings before release-style OTP testing
+- Test Firebase OTP login
+- Test adding and verifying trusted contacts
+- Test SOS, fake call, and live tracking
+- Confirm background location permissions and share links work from mobile data as well as Wi-Fi
+
+## Accounts Required
+
+Required for the current core app:
+
+- Firebase project
+- Expo / EAS account
+- MongoDB Atlas project
+- GitHub repository
+- Render account or another public backend host
+
+Optional unless live provider delivery is required:
+
+- Twilio account for real SMS
+- Meta WhatsApp Cloud API account for real WhatsApp alerts
+
+## Free Alternatives
+
+### Render free web service
+
+- Render officially supports free web services on the free Hobby workspace plan
+- Limitation: free services spin down after 15 minutes of inactivity and can take about a minute to wake up again
+- This is the best free hosted option for this repo because the backend stays public without your laptop needing to remain on
+
+### Cloudflare Quick Tunnel
+
+- Cloudflare also provides free Quick Tunnels and does not require account creation for that mode
+- This is useful for immediate testing from any network without deploying
+- Limitation: the tunnel URL is temporary and your laptop must stay on while the tunnel is active
 
 ## Local Development
 

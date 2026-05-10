@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import type { AlertChannel, EmergencySessionDto, EmergencyStartInput } from "@vajrita/shared";
 import { env } from "../config/env.js";
 import { AlertAttemptModel } from "../models/AlertAttempt.js";
-import { EmergencySessionModel } from "../models/EmergencySession.js";
+import { EmergencySessionModel, type EmergencySessionDocument } from "../models/EmergencySession.js";
 import { TrackingSessionModel } from "../models/TrackingSession.js";
 import { UserModel } from "../models/User.js";
 import { AppError } from "../utils/AppError.js";
@@ -23,7 +23,7 @@ function summaryFromAttempts(attempts: { status: string }[]) {
   );
 }
 
-async function toEmergencyDto(session: Awaited<ReturnType<typeof EmergencySessionModel.findById>>) {
+async function toEmergencyDto(session: EmergencySessionDocument | null) {
   if (!session) {
     throw new AppError("Emergency session not found", 404, "SOS_NOT_FOUND");
   }

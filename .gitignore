@@ -22,6 +22,7 @@ apps/mobile/current-build-log*
 apps/mobile/preview-build-log*
 apps/mobile/eas-log*
 apps/mobile/expo-build-page.html
+server-start*.log
 
 # Expo / React Native local artifacts
 apps/mobile/android/
@@ -32,6 +33,9 @@ apps/mobile/.eas-inspect/
 
 # Output
 apps/server/dist/
+packages/shared/src/**/*.js
+packages/shared/src/**/*.d.ts
+packages/shared/src/**/*.js.map
 *.apk
 *.aab
 *.ipa

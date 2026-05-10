@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: vajrita-server
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install --legacy-peer-deps && npm run build --workspace @vajrita/server
+    startCommand: npm run start --workspace @vajrita/server
+    healthCheckPath: /health
+    autoDeploy: true

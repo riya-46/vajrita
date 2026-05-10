@@ -5,8 +5,9 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
   APP_URL: z.string().url().default("http://localhost:4000"),
-  MOBILE_APP_URL: z.string().url().default("http://localhost:8081"),
-  CLIENT_URL: z.string().url().default("http://localhost:8081"),
+  MOBILE_APP_URL: z.string().url().optional(),
+  CLIENT_URL: z.string().url().optional(),
+  ALLOWED_ORIGINS: z.string().optional(),
   MONGODB_URI: z.string().min(10),
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
@@ -35,4 +36,21 @@ if (!parsed.success) {
   throw new Error("Invalid server environment");
 }
 
-export const env = parsed.data;
+function parseOrigins(value?: string) {
+  return value
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean) ?? [];
+}
+
+const clientUrl = parsed.data.CLIENT_URL || parsed.data.APP_URL;
+const mobileAppUrl = parsed.data.MOBILE_APP_URL || parsed.data.APP_URL;
+
+export const env = {
+  ...parsed.data,
+  CLIENT_URL: clientUrl,
+  MOBILE_APP_URL: mobileAppUrl,
+  CORS_ORIGINS: Array.from(
+    new Set([parsed.data.APP_URL, clientUrl, mobileAppUrl, ...parseOrigins(parsed.data.ALLOWED_ORIGINS)]),
+  ),
+};

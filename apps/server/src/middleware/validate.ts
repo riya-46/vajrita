@@ -10,7 +10,7 @@ export function validateBody(schema: ZodTypeAny) {
 
 export function validateParams(schema: ZodTypeAny) {
   return (req: Request, _res: Response, next: NextFunction) => {
-    req.params = schema.parse(req.params);
+    req.params = schema.parse(req.params) as Request["params"];
     next();
   };
 }

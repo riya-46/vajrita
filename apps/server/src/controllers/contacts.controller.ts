@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { contactsService } from "../services/contacts.service.js";
+import { getSingleParam } from "../utils/request.js";
 
 export const contactsController = {
   async list(req: Request, res: Response) {
@@ -13,17 +14,17 @@ export const contactsController = {
   },
 
   async update(req: Request, res: Response) {
-    const data = await contactsService.update(req.auth!.userId, req.params.id, req.body);
+    const data = await contactsService.update(req.auth!.userId, getSingleParam(req.params.id), req.body);
     res.json({ success: true, data });
   },
 
   async remove(req: Request, res: Response) {
-    await contactsService.remove(req.auth!.userId, req.params.id);
+    await contactsService.remove(req.auth!.userId, getSingleParam(req.params.id));
     res.json({ success: true, data: { deleted: true } });
   },
 
   async sendVerification(req: Request, res: Response) {
-    const data = await contactsService.sendVerification(req.auth!.userId, req.params.id);
+    const data = await contactsService.sendVerification(req.auth!.userId, getSingleParam(req.params.id));
     res.json({ success: true, data });
   },
 };

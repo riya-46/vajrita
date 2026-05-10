@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { sosService } from "../services/sos.service.js";
+import { getSingleParam } from "../utils/request.js";
 
 export const sosController = {
   async start(req: Request, res: Response) {
@@ -13,12 +14,12 @@ export const sosController = {
   },
 
   async retry(req: Request, res: Response) {
-    const data = await sosService.retry(req.auth!.userId, req.params.id, req.body.attemptIds);
+    const data = await sosService.retry(req.auth!.userId, getSingleParam(req.params.id), req.body.attemptIds);
     res.json({ success: true, data });
   },
 
   async end(req: Request, res: Response) {
-    const data = await sosService.end(req.auth!.userId, req.params.id);
+    const data = await sosService.end(req.auth!.userId, getSingleParam(req.params.id));
     res.json({ success: true, data });
   },
 };

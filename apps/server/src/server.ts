@@ -10,8 +10,8 @@ async function bootstrap() {
   const server = createServer(app);
   initializeSockets(server);
 
-  server.listen(env.PORT, () => {
-    console.log(`VAJRITA server running on ${env.APP_URL}`);
+  server.listen(env.PORT, "0.0.0.0", () => {
+    console.log(`VAJRITA server running on ${env.APP_URL} (0.0.0.0:${env.PORT})`);
   });
 }
 

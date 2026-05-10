@@ -19,10 +19,18 @@ import { asyncHandler } from "./utils/asyncHandler.js";
 
 export function createApp() {
   const app = express();
+  const allowedOrigins = new Set(env.CORS_ORIGINS);
 
   app.use(
     cors({
-      origin: [env.CLIENT_URL, env.MOBILE_APP_URL],
+      origin(origin, callback) {
+        if (!origin || allowedOrigins.has(origin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(new Error("Origin not allowed by CORS"));
+      },
       credentials: true,
     }),
   );

@@ -8,7 +8,7 @@ import type {
 import { nanoid } from "nanoid";
 import { env } from "../config/env.js";
 import { LocationPointModel } from "../models/LocationPoint.js";
-import { TrackingSessionModel } from "../models/TrackingSession.js";
+import { TrackingSessionModel, type TrackingSessionDocument } from "../models/TrackingSession.js";
 import { AppError } from "../utils/AppError.js";
 import { emitToTrack, emitToUser } from "../sockets/index.js";
 import { addMinutes } from "./date.service.js";
@@ -24,10 +24,25 @@ function durationToExpiry(duration: TrackingDuration) {
   return null;
 }
 
-function toTrackingDto(session: Awaited<ReturnType<typeof TrackingSessionModel.findById>>) {
+function toTrackingDto(session: TrackingSessionDocument | null) {
   if (!session) {
     throw new AppError("Tracking session not found", 404, "TRACKING_NOT_FOUND");
   }
+
+  const lastLocation =
+    session.lastLocation &&
+    session.lastLocation.latitude != null &&
+    session.lastLocation.longitude != null &&
+    session.lastLocation.timestamp
+      ? {
+          latitude: session.lastLocation.latitude,
+          longitude: session.lastLocation.longitude,
+          accuracy: session.lastLocation.accuracy ?? undefined,
+          speed: session.lastLocation.speed ?? undefined,
+          heading: session.lastLocation.heading ?? undefined,
+          timestamp: session.lastLocation.timestamp.toISOString(),
+        }
+      : null;
 
   return {
     id: session._id.toString(),
@@ -38,16 +53,7 @@ function toTrackingDto(session: Awaited<ReturnType<typeof TrackingSessionModel.f
     startedAt: session.startedAt.toISOString(),
     endedAt: session.endedAt?.toISOString() ?? null,
     expiresAt: session.expiresAt?.toISOString() ?? null,
-    lastLocation: session.lastLocation
-      ? {
-          latitude: session.lastLocation.latitude,
-          longitude: session.lastLocation.longitude,
-          accuracy: session.lastLocation.accuracy,
-          speed: session.lastLocation.speed,
-          heading: session.lastLocation.heading,
-          timestamp: session.lastLocation.timestamp.toISOString(),
-        }
-      : null,
+    lastLocation,
     shareUrl: `${env.APP_URL}/public/track/${session.shareToken}`,
   } satisfies TrackingSessionDto;
 }

@@ -1,8 +1,8 @@
 import type { FakeCallConfigInput } from "@vajrita/shared";
-import { UserModel } from "../models/User.js";
+import { UserModel, type UserDocument } from "../models/User.js";
 import { AppError } from "../utils/AppError.js";
 
-function toConfigDto(user: Awaited<ReturnType<typeof UserModel.findById>>) {
+function toConfigDto(user: UserDocument | null) {
   if (!user) {
     throw new AppError("User not found", 404, "USER_NOT_FOUND");
   }
