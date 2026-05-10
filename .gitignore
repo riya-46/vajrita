@@ -22,6 +22,9 @@ apps/mobile/current-build-log*
 apps/mobile/preview-build-log*
 apps/mobile/eas-log*
 apps/mobile/expo-build-page.html
+expo-start-live.log
+cf-tunnel.log
+server-public.log
 server-start*.log
 
 # Expo / React Native local artifacts
@@ -36,14 +39,16 @@ apps/server/dist/
 packages/shared/src/**/*.js
 packages/shared/src/**/*.d.ts
 packages/shared/src/**/*.js.map
+vajrita-*.apk
 *.apk
 *.aab
 *.ipa
 
-# Secret-bearing mobile config
-apps/mobile/google-services.json
+# Mobile platform config
+# Keep apps/mobile/google-services.json tracked so Android EAS builds can use it.
 apps/mobile/android/app/google-services.json
 apps/mobile/GoogleService-Info.plist
+apps/mobile/expo-env.d.ts
 
 # Secret-bearing backend config
 apps/server/*firebase-adminsdk*.json
