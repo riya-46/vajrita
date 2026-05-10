@@ -12,6 +12,13 @@
   },
   "dependencies": {
     "@vajrita/shared": "1.0.0",
+    "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.10.0",
     "axios": "^1.13.1",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
@@ -27,18 +34,9 @@
     "morgan": "^1.10.1",
     "nanoid": "^5.1.6",
     "socket.io": "^4.8.1",
+    "typescript": "^5.9.3",
     "tsx": "^4.20.6",
     "twilio": "^5.10.5",
     "zod": "^4.1.12"
-  },
-  "devDependencies": {
-    "@types/compression": "^1.8.1",
-    "@types/cookie-parser": "^1.4.9",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/morgan": "^1.9.10",
-    "@types/node": "^24.10.0",
-    "typescript": "^5.9.3"
   }
 }
