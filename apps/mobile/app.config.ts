@@ -1,6 +1,10 @@
 import type { ExpoConfig } from "expo/config";
 
-const config: ExpoConfig = {
+type AppConfig = ExpoConfig & {
+  newArchEnabled?: boolean;
+};
+
+const config: AppConfig = {
   name: "VAJRITA",
   slug: "vajrita",
   owner: "amritashray",

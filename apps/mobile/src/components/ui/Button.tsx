@@ -15,6 +15,20 @@ const variants = {
   ghost: "bg-transparent border border-border",
 };
 
+const textVariants = {
+  primary: "text-white",
+  secondary: "text-text",
+  danger: "text-white",
+  ghost: "text-text",
+};
+
+const spinnerColors = {
+  primary: "#ffffff",
+  secondary: "#16131a",
+  danger: "#ffffff",
+  ghost: "#16131a",
+};
+
 export function Button({
   children,
   onPress,
@@ -31,9 +45,9 @@ export function Button({
       }`}
     >
       {loading ? (
-        <ActivityIndicator color="#ffffff" />
+        <ActivityIndicator color={spinnerColors[variant]} />
       ) : (
-        <Text className="text-base font-bold text-white">{children}</Text>
+        <Text className={`text-base font-bold ${textVariants[variant]}`}>{children}</Text>
       )}
     </Pressable>
   );

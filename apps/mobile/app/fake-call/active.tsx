@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { Pressable, Text, View } from "react-native";
+import { BackPill } from "../../src/components/ui/SoftUI";
 import { Screen } from "../../src/components/ui/Screen";
+import { surfaceShadow } from "../../src/constants/theme";
 import { formatDuration } from "../../src/utils/time";
 
 export default function FakeCallActiveScreen() {
@@ -15,24 +17,28 @@ export default function FakeCallActiveScreen() {
 
   return (
     <Screen>
-      <View className="flex-1 items-center justify-between py-12">
-        <View className="items-center gap-3 pt-12">
-          <Text className="text-3xl font-bold text-white">{callerName || "Emergency Contact"}</Text>
-          <Text className="text-base text-muted">{callerPhone}</Text>
-          <Text className="mt-3 text-2xl font-semibold text-text">{formatDuration(seconds)}</Text>
-        </View>
+      <View className="flex-1 justify-between py-6">
+        <BackPill onPress={() => router.push("/(tabs)/home")} />
 
-        <View className="w-full gap-4">
-          <View className="flex-row gap-3">
-            {["Mute", "Speaker", "Keypad"].map((label) => (
-              <View key={label} className="flex-1 rounded-3xl bg-panel p-5">
-                <Text className="text-center font-semibold text-text">{label}</Text>
-              </View>
-            ))}
+        <View className="mt-6 flex-1 justify-between gap-6 rounded-[30px] border border-border bg-panel p-5" style={surfaceShadow}>
+          <View className="items-center gap-3 pt-8">
+            <Text className="text-center text-4xl font-extrabold text-text">{callerName || "Emergency Contact"}</Text>
+            <Text className="text-lg text-muted">{callerPhone}</Text>
+            <Text className="mt-3 text-2xl font-semibold text-accent">{formatDuration(seconds)}</Text>
           </View>
-          <Pressable className="h-16 items-center justify-center rounded-full bg-red-700" onPress={() => router.replace("/(tabs)/home")}>
-            <Text className="text-lg font-bold text-white">End Call</Text>
-          </Pressable>
+
+          <View className="gap-4">
+            <View className="flex-row gap-3">
+              {["Mute", "Speaker", "Keypad"].map((label) => (
+                <View key={label} className="flex-1 rounded-[24px] bg-accentMuted p-5">
+                  <Text className="text-center font-semibold text-accent">{label}</Text>
+                </View>
+              ))}
+            </View>
+            <Pressable className="h-16 items-center justify-center rounded-full bg-[#e4473b]" onPress={() => router.replace("/(tabs)/home")}>
+              <Text className="text-lg font-bold text-white">End Call</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Screen>

@@ -1,13 +1,13 @@
 export const theme = {
   colors: {
-    background: "#090b0f",
-    panel: "#141820",
-    panelMuted: "#1b2029",
-    accent: "#ef4444",
-    accentMuted: "#7f1d1d",
-    text: "#f8fafc",
-    muted: "#94a3b8",
-    border: "#28303d",
+    background: "#f7f9fe",
+    panel: "#ffffff",
+    panelMuted: "#edf2ff",
+    accent: "#2f55e7",
+    accentMuted: "#e8edff",
+    text: "#202b45",
+    muted: "#6d7a96",
+    border: "#dbe3f1",
     success: "#22c55e",
     warning: "#f59e0b",
   },
@@ -20,3 +20,11 @@ export const theme = {
 
 export const DEFAULT_RINGTONE_URL =
   "https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg";
+
+export const surfaceShadow = {
+  shadowColor: "#8ea1cc",
+  shadowOpacity: 0.14,
+  shadowRadius: 18,
+  shadowOffset: { width: 0, height: 10 },
+  elevation: 4,
+} as const;

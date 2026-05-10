@@ -37,9 +37,11 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="sos/index" options={{ presentation: "card" }} />
           <Stack.Screen name="contacts/[id]" options={{ presentation: "modal" }} />
           <Stack.Screen name="contacts/new" options={{ presentation: "modal" }} />
           <Stack.Screen name="sos/active" options={{ presentation: "card" }} />
+          <Stack.Screen name="fake-call/setup" options={{ presentation: "card" }} />
           <Stack.Screen name="fake-call/index" options={{ presentation: "fullScreenModal" }} />
           <Stack.Screen name="fake-call/active" options={{ presentation: "card" }} />
         </Stack>

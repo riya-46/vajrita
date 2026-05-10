@@ -4,14 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#090b0f",
-        panel: "#141820",
-        panelMuted: "#1b2029",
-        accent: "#ef4444",
-        accentMuted: "#7f1d1d",
-        text: "#f8fafc",
-        muted: "#94a3b8",
-        border: "#28303d",
+        background: "#f7f9fe",
+        panel: "#ffffff",
+        panelMuted: "#edf2ff",
+        accent: "#2f55e7",
+        accentMuted: "#e8edff",
+        text: "#202b45",
+        muted: "#6d7a96",
+        border: "#dbe3f1",
       },
       fontSize: {
         emergency: ["48px", { lineHeight: "52px", fontWeight: "800" }],

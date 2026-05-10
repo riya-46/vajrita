@@ -38,6 +38,9 @@ export async function completeOtpLogin(code: string) {
   }
 
   const credential = await currentVerification.confirm(code);
+  if (!credential) {
+    throw new Error("OTP verification failed. Please try again.");
+  }
   const firebaseToken = await credential.user.getIdToken(true);
   const { pendingName } = useAuthStore.getState();
   const payload = await apiRequest<{

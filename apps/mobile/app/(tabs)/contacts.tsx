@@ -1,60 +1,152 @@
-import { Link } from "expo-router";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
-import { Header } from "../../src/components/ui/Header";
+import { Link, router } from "expo-router";
+import { useMemo, useState } from "react";
+import { ActivityIndicator, Alert, Linking, Pressable, Text, View } from "react-native";
+import { BackPill, SurfaceCard } from "../../src/components/ui/SoftUI";
+import { ErrorState } from "../../src/components/ui/ErrorState";
 import { Input } from "../../src/components/ui/Input";
 import { Loader } from "../../src/components/ui/Loader";
 import { Screen } from "../../src/components/ui/Screen";
+import { surfaceShadow } from "../../src/constants/theme";
 import { useContacts } from "../../src/hooks/useContacts";
-import { useContactsStore } from "../../src/store/contacts.store";
+import { normalizePhoneNumber } from "../../src/utils/phone";
 
 export default function ContactsScreen() {
-  const search = useContactsStore((state) => state.search);
-  const setSearch = useContactsStore((state) => state.setSearch);
-  const { items, isLoading, verifyMutation } = useContacts();
+  const { items, isLoading, createMutation, deleteMutation, verifyMutation } = useContacts();
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const trustedContacts = useMemo(() => items.filter((contact) => !contact.isDefault), [items]);
+  const emergencyContacts = useMemo(() => items.filter((contact) => contact.isDefault), [items]);
 
   if (isLoading) {
-    return <Loader label="Loading trusted contacts..." />;
+    return <Loader label="Loading emergency contacts..." />;
   }
 
+  const handleAdd = async () => {
+    if (!name.trim() || !phone.trim()) {
+      Alert.alert("Missing details", "Enter both name and phone number.");
+      return;
+    }
+
+    try {
+      await createMutation.mutateAsync({
+        name: name.trim(),
+        phone: normalizePhoneNumber(phone),
+        relationship: "Trusted Contact",
+      });
+      setName("");
+      setPhone("");
+    } catch (error) {
+      Alert.alert("Add failed", error instanceof Error ? error.message : "Could not add the trusted contact.");
+    }
+  };
+
   return (
-    <Screen scrollable header={<Header title="Trusted Contacts" subtitle="Keep your emergency network verified and ready." />}>
-      <Input label="Search contacts" value={search} onChangeText={setSearch} placeholder="Search by name or phone" />
-      <Link href="/contacts/new" asChild>
-        <Pressable className="rounded-2xl border border-dashed border-accent p-4">
-          <Text className="text-center text-base font-bold text-accent">Add Trusted Contact</Text>
-        </Pressable>
-      </Link>
-      <View className="gap-3">
-        {items.map((contact) => (
-          <View key={contact.id} className="rounded-3xl border border-border bg-panel p-4">
-            <Link href={{ pathname: "/contacts/[id]", params: { id: contact.id } }} asChild>
-              <Pressable>
-                <View className="flex-row items-start justify-between gap-4">
-                  <View className="flex-1 gap-1">
-                    <Text className="text-lg font-bold text-text">{contact.name}</Text>
-                    <Text className="text-sm text-muted">{contact.phone}</Text>
-                    <Text className="text-sm text-muted">{contact.relationship}</Text>
-                  </View>
-                  <View className={`rounded-full px-3 py-2 ${contact.verified ? "bg-emerald-800" : "bg-amber-700"}`}>
-                    <Text className="text-xs font-bold text-white">{contact.verified ? "Verified" : "Pending"}</Text>
+    <Screen scrollable>
+      <View className="gap-5 py-4">
+        <BackPill onPress={() => router.push("/(tabs)/home")} />
+
+        <SurfaceCard className="gap-3">
+          <Text className="text-[22px] font-extrabold text-text">Emergency Contacts</Text>
+          <Text className="text-lg leading-7 text-muted">
+            Add your trustworthy people as emergency contacts and keep default emergency numbers close.
+          </Text>
+
+          <View className="gap-3">
+            <View className="flex-row gap-3">
+              <View className="flex-1">
+                <Input label="Name" value={name} onChangeText={setName} placeholder="Name" />
+              </View>
+              <View className="flex-1">
+                <Input label="Phone number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="Phone" />
+              </View>
+            </View>
+            <Pressable
+              onPress={handleAdd}
+              className="self-center rounded-[18px] bg-accent px-10 py-4"
+              style={surfaceShadow}
+            >
+              {createMutation.isPending ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text className="text-lg font-semibold text-white">Add</Text>
+              )}
+            </Pressable>
+          </View>
+        </SurfaceCard>
+
+        <SurfaceCard className="gap-4">
+          {trustedContacts.length ? (
+            trustedContacts.map((contact) => (
+              <View
+                key={contact.id}
+                className="rounded-[26px] border border-border bg-panel px-5 py-5"
+                style={surfaceShadow}
+              >
+                <View className="flex-row items-center justify-between gap-4">
+                  <Pressable onPress={() => router.push({ pathname: "/contacts/[id]", params: { id: contact.id } })} className="flex-1">
+                    <Text className="text-[18px] font-bold text-text">{contact.name}</Text>
+                    <Text className="mt-2 text-lg text-muted">{contact.phone}</Text>
+                    <Text className="mt-1 text-sm text-muted">{contact.relationship}</Text>
+                  </Pressable>
+
+                  <View className="items-end gap-3">
+                    <Pressable
+                      onPress={() => deleteMutation.mutate(contact.id)}
+                      className="rounded-[18px] border border-border bg-panel px-5 py-3"
+                    >
+                      <Text className="text-base font-semibold text-text">Remove</Text>
+                    </Pressable>
+                    {!contact.verified ? (
+                      <Pressable
+                        onPress={() => verifyMutation.mutate(contact.id)}
+                        className="rounded-[18px] bg-accentMuted px-4 py-2"
+                      >
+                        {verifyMutation.isPending ? (
+                          <ActivityIndicator color="#2f55e7" />
+                        ) : (
+                          <Text className="font-semibold text-accent">Verify</Text>
+                        )}
+                      </Pressable>
+                    ) : (
+                      <View className="rounded-full bg-[#ebfff1] px-4 py-2">
+                        <Text className="font-semibold text-[#1d8c4d]">Verified</Text>
+                      </View>
+                    )}
                   </View>
                 </View>
-              </Pressable>
-            </Link>
-            {!contact.verified && !contact.isDefault ? (
+              </View>
+            ))
+          ) : (
+            <ErrorState
+              title="No trusted contacts yet"
+              message="Add at least one person so SOS, fake call, and tracking can reach someone useful."
+            />
+          )}
+        </SurfaceCard>
+
+        <SurfaceCard className="gap-4">
+          {emergencyContacts.map((contact) => (
+            <View key={contact.id} className="flex-row items-center justify-between gap-4 rounded-[22px] bg-panel px-5 py-4">
+              <View className="flex-1 gap-1">
+                <Text className="text-[18px] font-semibold text-text">{contact.name}</Text>
+                <Text className="text-sm text-muted">{contact.relationship}</Text>
+              </View>
               <Pressable
-                className="mt-4 rounded-2xl bg-panelMuted px-4 py-3"
-                onPress={() => verifyMutation.mutate(contact.id)}
+                onPress={() => Linking.openURL(`tel:${contact.phone}`).catch(() => undefined)}
+                className="rounded-[18px] border border-border bg-panel px-5 py-3"
               >
-                {verifyMutation.isPending ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text className="text-center font-semibold text-text">Send Verification Link</Text>
-                )}
+                <Text className="text-lg font-semibold text-text">{contact.phone}</Text>
               </Pressable>
-            ) : null}
-          </View>
-        ))}
+            </View>
+          ))}
+        </SurfaceCard>
+
+        <Link href="/contacts/new" asChild>
+          <Pressable className="self-center rounded-full border border-border bg-panel px-5 py-3">
+            <Text className="font-semibold text-accent">Open full contact form</Text>
+          </Pressable>
+        </Link>
       </View>
     </Screen>
   );
