@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "expo start --dev-client",
     "android": "expo run:android",
-    "build": "expo export --platform android",
+    "build": "tsc -p tsconfig.json --noEmit",
+    "bundle:android": "expo export:embed --eager --platform android --dev false",
     "test": "echo \"No automated mobile tests configured yet\""
   },
   "dependencies": {

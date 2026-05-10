@@ -57,19 +57,10 @@ export default function HomeScreen() {
           <MenuButton label="Send SOS Alert" onPress={() => router.push("/sos")} />
           <MenuButton label="Emergency Contacts" onPress={() => router.push("/(tabs)/contacts")} />
           <MenuButton label="Share Live Location" onPress={() => router.push("/(tabs)/tracking")} />
-          <MenuButton
-            label="Voice Alert"
-            onPress={() => Alert.alert("Coming soon", "Voice alert can be added once on-device audio recording is wired.")}
-          />
-          <MenuButton
-            label="Risk Zones"
-            onPress={() => Alert.alert("Coming soon", "Risk zone mapping will need maps and location-intelligence integration.")}
-          />
+          <MenuButton label="Voice Alert" onPress={() => router.push("/voice-alert")} />
+          <MenuButton label="Risk Zones" onPress={() => router.push("/risk-zones")} />
           <MenuButton label="Fake Call" onPress={() => router.push("/fake-call/setup")} />
-          <MenuButton
-            label="Safe Places"
-            onPress={() => Alert.alert("Coming soon", "Safe places can be added once map search is connected.")}
-          />
+          <MenuButton label="Safe Places" onPress={() => router.push("/safe-places")} />
         </View>
       </View>
     </Screen>

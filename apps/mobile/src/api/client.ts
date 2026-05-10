@@ -3,8 +3,11 @@ import type { ApiResponse, AuthenticatedUser, SessionTokens } from "@vajrita/sha
 import { clearSession, loadStoredTokens, saveSession } from "../services/session";
 import { useAuthStore } from "../store/auth.store";
 
-const baseUrl =
-  process.env.EXPO_PUBLIC_API_URL || Constants.expoConfig?.extra?.apiUrl || "http://localhost:4000";
+const baseUrl = (
+  process.env.EXPO_PUBLIC_API_URL ||
+  Constants.expoConfig?.extra?.apiUrl ||
+  "http://localhost:4000"
+).replace(/\/$/, "");
 
 let refreshPromise: Promise<string | null> | null = null;
 

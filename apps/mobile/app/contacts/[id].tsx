@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, Linking, View } from "react-native";
 import { Button } from "../../src/components/ui/Button";
 import { Header } from "../../src/components/ui/Header";
 import { Input } from "../../src/components/ui/Input";
@@ -54,6 +54,28 @@ export default function ContactDetailScreen() {
     }
   };
 
+  const handleVerify = async () => {
+    try {
+      const result = await verifyMutation.mutateAsync(contact.id);
+      if (result.verificationLink) {
+        Alert.alert("Verification link ready", "Fallback mode is active. Open the link now or share it manually.", [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Open Link",
+            onPress: () => {
+              Linking.openURL(result.verificationLink!).catch(() => undefined);
+            },
+          },
+        ]);
+        return;
+      }
+
+      Alert.alert("Verification sent", "Verification request was sent successfully.");
+    } catch (error) {
+      Alert.alert("Verification failed", error instanceof Error ? error.message : "Unable to resend verification.");
+    }
+  };
+
   return (
     <Screen scrollable header={<Header title={contact.name} subtitle={contact.isDefault ? "Default emergency service contact" : "Manage verification and details."} />}>
       <View className="gap-4">
@@ -66,7 +88,7 @@ export default function ContactDetailScreen() {
               Save Changes
             </Button>
             {!contact.verified ? (
-              <Button variant="secondary" loading={verifyMutation.isPending} onPress={() => verifyMutation.mutate(contact.id)}>
+              <Button variant="secondary" loading={verifyMutation.isPending} onPress={handleVerify}>
                 Resend Verification
               </Button>
             ) : null}

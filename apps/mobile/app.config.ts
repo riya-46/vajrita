@@ -11,7 +11,7 @@ const config: AppConfig = {
   scheme: "vajrita",
   version: "1.0.0",
   orientation: "portrait",
-  userInterfaceStyle: "dark",
+  userInterfaceStyle: "light",
   newArchEnabled: false,
   experiments: {
     typedRoutes: true,
@@ -57,7 +57,7 @@ const config: AppConfig = {
     ],
   ],
   extra: {
-    apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.2:4000",
+    apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://localhost:4000",
     eas: {
       projectId: "ee7fea0c-ba7c-4682-9e1e-ce9cd003bc75",
     },

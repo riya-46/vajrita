@@ -41,6 +41,28 @@ export default function ContactsScreen() {
     }
   };
 
+  const handleVerify = async (contactId: string) => {
+    try {
+      const result = await verifyMutation.mutateAsync(contactId);
+      if (result.verificationLink) {
+        Alert.alert("Verification link ready", "Fallback mode is active. Open the link on this device or share it manually.", [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Open Link",
+            onPress: () => {
+              Linking.openURL(result.verificationLink!).catch(() => undefined);
+            },
+          },
+        ]);
+        return;
+      }
+
+      Alert.alert("Verification sent", "Verification request was sent successfully.");
+    } catch (error) {
+      Alert.alert("Verification failed", error instanceof Error ? error.message : "Could not send the verification link.");
+    }
+  };
+
   return (
     <Screen scrollable>
       <View className="gap-5 py-4">
@@ -99,7 +121,7 @@ export default function ContactsScreen() {
                     </Pressable>
                     {!contact.verified ? (
                       <Pressable
-                        onPress={() => verifyMutation.mutate(contact.id)}
+                        onPress={() => handleVerify(contact.id)}
                         className="rounded-[18px] bg-accentMuted px-4 py-2"
                       >
                         {verifyMutation.isPending ? (

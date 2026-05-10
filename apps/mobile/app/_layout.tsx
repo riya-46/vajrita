@@ -37,6 +37,9 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="voice-alert/index" options={{ presentation: "card" }} />
+          <Stack.Screen name="risk-zones/index" options={{ presentation: "card" }} />
+          <Stack.Screen name="safe-places/index" options={{ presentation: "card" }} />
           <Stack.Screen name="sos/index" options={{ presentation: "card" }} />
           <Stack.Screen name="contacts/[id]" options={{ presentation: "modal" }} />
           <Stack.Screen name="contacts/new" options={{ presentation: "modal" }} />
